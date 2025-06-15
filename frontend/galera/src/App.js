@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 
+
 function App() {
   return (
     <Router>
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Register />} />
         <Route path="*" element={<div>404 - Página não encontrada</div>} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
