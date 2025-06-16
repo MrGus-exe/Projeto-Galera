@@ -43,12 +43,14 @@ const Register = () => {
 
 const styles = {
   container: {
-    height: "100vh",
-    backgroundColor: "#1e1e1e",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  height: "100vh",
+  backgroundColor: "#1e1e1e",
+  display: "flex",
+  justifyContent: "flex-start", // empurra para a direita
+  alignItems: "flex-start",
+  paddingLeft: "700px", // controla a distância
+  paddingTop: "80px",
+},
   form: {
     backgroundColor: "#2c2f33",
     padding: "40px",
