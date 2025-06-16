@@ -17,7 +17,14 @@ const Login = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/users/login", credentials);
       alert("Login bem-sucedido!");
-      console.log(res.data); // aqui você pode salvar o token no localStorage
+
+      // Salva o token no localStorage
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // Redireciona (ex: para o feed ou home)
+      window.location.href = "/"; // ou qualquer rota da aplicação
+
     } catch (err) {
       alert("Erro ao fazer login. Verifique as credenciais.");
       console.error(err);
@@ -52,15 +59,14 @@ const Login = () => {
 
 const styles = {
   container: {
-  height: "100vh",
-  backgroundColor: "#1e1e1e",
-  display: "flex",
-  justifyContent: "flex-start", // empurra para a direita
-  alignItems: "flex-start",
-  paddingLeft: "700px", // controla a distância
-  paddingTop: "135px",
-},
-
+    height: "100vh",
+    backgroundColor: "#1e1e1e",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    paddingLeft: "700px",
+    paddingTop: "135px",
+  },
   form: {
     backgroundColor: "#2c2f33",
     padding: "40px",
@@ -93,7 +99,7 @@ const styles = {
   button: {
     padding: "10px",
     borderRadius: "25px",
-    backgroundColor: "#444",            // tom neutro escuro
+    backgroundColor: "#444",
     color: "#fff",
     border: "none",
     cursor: "pointer",
