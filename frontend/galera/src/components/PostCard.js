@@ -1,14 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const PostCard = ({ post }) => {
   const [showReply, setShowReply] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [comments, setComments] = useState([]);
 
-  const handleReply = () => {
-    if (replyText.trim() !== "") {
-      alert(`Resposta enviada: "${replyText}"`);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // Buscar comentários do post ao carregar
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/comments/post/${post.id}`);
+        setComments(res.data);
+      } catch (err) {
+        console.error("Erro ao carregar comentários:", err);
+      }
+    };
+
+    fetchComments();
+  }, [post.id]);
+
+  const handleReply = async () => {
+    if (replyText.trim() === "") return;
+
+    try {
+      await axios.post("http://localhost:5000/api/comments", {
+        post_id: post.id,
+        user_id: user.id,
+        comment: replyText,
+      });
+
+      // Atualiza comentários após envio
+      const res = await axios.get(`http://localhost:5000/api/comments/post/${post.id}`);
+      setComments(res.data);
       setReplyText("");
       setShowReply(false);
+    } catch (err) {
+      console.error("Erro ao enviar comentário:", err);
     }
   };
 
@@ -16,6 +46,11 @@ const PostCard = ({ post }) => {
     <div style={styles.card}>
       <strong>@{post.user}</strong>
       <p>{post.content}</p>
+      {post.created_at && (
+        <p style={{ fontSize: "12px", color: "#aaa" }}>
+          Publicado em: {new Date(post.created_at).toLocaleString("pt-BR")}
+        </p>
+      )}
       <button style={styles.replyButton} onClick={() => setShowReply(!showReply)}>
         Responder
       </button>
@@ -28,7 +63,23 @@ const PostCard = ({ post }) => {
             placeholder="Digite sua resposta..."
             style={styles.textarea}
           />
-          <button onClick={handleReply} style={styles.sendButton}>Enviar</button>
+          <button onClick={handleReply} style={styles.sendButton}>
+            Enviar
+          </button>
+        </div>
+      )}
+
+      {comments.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h4 style={{ color: "#aaa" }}>Comentários:</h4>
+          {comments.map((comment, index) => (
+            <div key={index} style={styles.comment}>
+              <strong>@{comment.username}</strong>: {comment.comment}
+              <div style={{ fontSize: "11px", color: "#aaa", marginTop: "2px" }}>
+                {new Date(comment.created_at).toLocaleString("pt-BR")}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -74,6 +125,12 @@ const styles = {
     backgroundColor: "#555",
     color: "#fff",
     cursor: "pointer",
+  },
+  comment: {
+    marginTop: "5px",
+    color: "#ddd",
+    padding: "5px 0",
+    borderBottom: "1px solid #444",
   },
 };
 
